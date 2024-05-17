@@ -50,6 +50,7 @@ def main(cfg: DictConfig):
     }, checkpoint_path)
 
     i = random.randint(0, len(targets)-1)
+    delta = delta.to('cuda')
     prompt = "4k, crime, portrait, detail, a portrait photo with high facial detailed of a person. " + ex_prompts[i].lower() 
     pattern_target = fr'\b({targets[i]})\b'
     characterwise_mask = get_mask_regex(prompt, pattern_target)
