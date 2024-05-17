@@ -185,7 +185,7 @@ class DiffusersSDModelBase(DiffusersModelBase):
         raise NotImplementedError()
 
     @torch.no_grad
-    def sample(self, controller, embs: List[PromptEmbedding], embs_neg: Optional[List[PromptEmbedding]], start_sample: Optional[Float[torch.Tensor, 'n c h w']] = None, start_after_relative: float = 0., cutoff_after_relative: float = 1., **kwargs) -> Union[List[Image.Image], Any]:
+    def sample(self, embs: List[PromptEmbedding], embs_neg: Optional[List[PromptEmbedding]], start_sample: Optional[Float[torch.Tensor, 'n c h w']] = None, start_after_relative: float = 0., cutoff_after_relative: float = 1., **kwargs) -> Union[List[Image.Image], Any]:
         timesteps, _ = retrieve_timesteps(self.pipe.scheduler, kwargs.get('num_inference_steps', self.num_inference_steps), device=self.pipe.device, timesteps=kwargs.get('timesteps', None))
         timesteps = timesteps[int(round(start_after_relative * len(timesteps))):int(round(cutoff_after_relative * len(timesteps)))]
         return self.pipe(**(self._get_pipe_kwargs(embs, embs_neg, start_sample=start_sample, **kwargs) | { 'timesteps': timesteps, 'num_inference_steps': len(timesteps) })).images

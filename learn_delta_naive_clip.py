@@ -56,6 +56,7 @@ def main(cfg: DictConfig):
     characterwise_mask = get_mask_regex(prompt, pattern_target)
     emb = model.embed_prompt(prompt) 
     imgs = []
+    Path('./demo').mkdir(exist_ok=True)
     for alpha in [0, 2]:
         img: Image.Image = model.sample_delayed(
             embs=[delta.apply(emb, characterwise_mask, alpha)],
@@ -67,7 +68,7 @@ def main(cfg: DictConfig):
             num_inference_steps=30,
         )[0]
         imgs.append(img)
-        img.save(Path('./demo' / f'{alpha}_{cfg.tag}'))
+        img.save(Path('./demo') / f'{alpha}_{cfg.tag}')
 
 if __name__ == "__main__":
     main()
