@@ -1,0 +1,31 @@
+# @package _global_
+
+tag: 'eyebrows/bushy'
+
+prompts:
+- prompt_target: 'eyebrows'
+  prompt_positive: 'bushy eyebrows'
+  prompt_negative: 'narrow eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'thick eyebrows'
+  prompt_negative: 'fine eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'full eyebrows'
+  prompt_negative: 'slender eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'strong eyebrows'
+  prompt_negative: 'narrow eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'very bushy eyebrows'
+  prompt_negative: 'very sparse eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'very bushy eyebrows'
+  prompt_negative: 'very slender eyebrows'
+  pattern_target: 'eyebrows'
+
+prefixes: ${combinations:'{,a photo of,a portrait of,a painting of} a {,beautiful} {,asian,african-american,caucasian,white,arab,black,african,american,south-american,indian} {man, woman, person, boy, girl, lady, adult, guy} {have, has}'}
