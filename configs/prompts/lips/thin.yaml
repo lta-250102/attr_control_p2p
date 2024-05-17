@@ -1,0 +1,27 @@
+# @package _global_
+
+tag: 'lips/thin'
+
+prompts:
+- prompt_target: 'lips'
+  prompt_positive: 'thin lips'
+  prompt_negative: 'thick lips'
+  pattern_target: 'lips'
+- prompt_target: 'lips'
+  prompt_positive: 'small lips'
+  prompt_negative: 'big lips'
+  pattern_target: 'lips'
+- prompt_target: 'lips'
+  prompt_positive: 'thin lips'
+  prompt_negative: 'full lips'
+  pattern_target: 'lips'
+- prompt_target: 'lips'
+  prompt_positive: 'very thin lips'
+  prompt_negative: 'very thick lips'
+  pattern_target: 'lips'
+- prompt_target: 'lips'
+  prompt_positive: 'very small lips'
+  prompt_negative: 'very big lips'
+  pattern_target: 'lips'
+
+prefixes: ${combinations:'{,a photo of,a portrait of,a painting of} a {,beautiful} {,asian,african-american,caucasian,white,arab,black,african,american,south-american,indian} {man, woman, person, boy, girl, lady, adult, guy} {have, has}'}

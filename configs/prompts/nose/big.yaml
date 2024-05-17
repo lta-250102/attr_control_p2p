@@ -1,0 +1,23 @@
+# @package _global_
+
+tag: 'nose/big'
+
+prompts:
+- prompt_target: 'nose'
+  prompt_positive: 'big nose'
+  prompt_negative: 'small nose'
+  pattern_target: 'nose'
+- prompt_target: 'nose'
+  prompt_positive: 'big nose'
+  prompt_negative: 'low nose'
+  pattern_target: 'nose'
+- prompt_target: 'nose'
+  prompt_positive: 'high nose'
+  prompt_negative: 'small nose'
+  pattern_target: 'nose'
+- prompt_target: 'nose'
+  prompt_positive: 'very big nose'
+  prompt_negative: 'very small nose'
+  pattern_target: 'nose'
+
+prefixes: ${combinations:'{,a photo of,a portrait of,a painting of} a {,beautiful} {,asian,african-american,caucasian,white,arab,black,african,american,south-american,indian} {man, woman, person, boy, girl, lady, adult, guy} {have, has} a'}

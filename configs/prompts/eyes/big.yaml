@@ -1,0 +1,27 @@
+# @package _global_
+
+tag: 'eyes/big'
+
+prompts:
+- prompt_target: 'eyes'
+  prompt_positive: 'big eyes'
+  prompt_negative: 'small eyes'
+  pattern_target: 'eyes'
+- prompt_target: 'eyes'
+  prompt_positive: 'round eyes'
+  prompt_negative: 'small eyes'
+  pattern_target: 'eyes'
+- prompt_target: 'eyes'
+  prompt_positive: 'big eyes'
+  prompt_negative: 'narrow eyes'
+  pattern_target: 'eyes'
+- prompt_target: 'eyes'
+  prompt_positive: 'very round eyes'
+  prompt_negative: 'very narrow eyes'
+  pattern_target: 'eyes'
+- prompt_target: 'eyes'
+  prompt_positive: 'very big eyes'
+  prompt_negative: 'very small eyes'
+  pattern_target: 'eyes'
+
+prefixes: ${combinations:'{,a photo of,a portrait of,a painting of} a {,beautiful} {,asian,african-american,caucasian,white,arab,black,african,american,south-american,indian} {man, woman, person, boy, girl, lady, adult, guy} {have, has}'}
