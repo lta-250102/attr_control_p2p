@@ -4,6 +4,7 @@ from pathlib import Path
 from tqdm.auto import tqdm
 import hydra
 import torch
+import random
 from omegaconf import DictConfig
 from PIL import Image
 from attribute_control import EmbeddingDelta
@@ -19,10 +20,14 @@ def main(cfg: DictConfig):
     model: ModelBase = cfg.model
     prompts: List[Dict[str, str]] = cfg.prompts
     prefixes: List[str] = cfg.prefixes
+    targets = []
+    ex_prompts = []
 
     # Compute the deltas for each prompt pair
     deltas = []
     for prefix, d_prompt in tqdm(product(prefixes, prompts), total=(len(prefixes) * len(prompts))):
+        targets.append(d_prompt['prompt_target'])
+        ex_prompts.append(f'{prefix} {d_prompt["prompt_target"]}')
         target_token_embs = { }
         for direction in ['prompt_positive', 'prompt_negative']:
             emb = model.embed_prompt(f'{prefix} {d_prompt[direction]}')
@@ -44,8 +49,9 @@ def main(cfg: DictConfig):
         'delta': delta.cpu().state_dict(),
     }, checkpoint_path)
 
-    prompt = "4k, crime, portrait, detail, a portrait photo with high facial detailed of a person. " + captions[file].lower() 
-    pattern_target = r'\b(eyes)\b'
+    i = random.randint(0, len(targets)-1)
+    prompt = "4k, crime, portrait, detail, a portrait photo with high facial detailed of a person. " + ex_prompts[i].lower() 
+    pattern_target = fr'\b({targets[i]})\b'
     characterwise_mask = get_mask_regex(prompt, pattern_target)
     emb = model.embed_prompt(prompt) 
     imgs = []
