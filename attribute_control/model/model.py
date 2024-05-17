@@ -142,7 +142,7 @@ class DiffusersModelBase(ModelBase):
                     skipped_chars.append(prompt[i])
                     i += 1
                 assert i + len(token) <= len(prompt)
-                assert prompt[i:(i + len(token))] == token, 'Misaligned'
+                assert prompt[i:(i + len(token))] == token, f'Misaligned, token: {token}, i: {i}, prompt: {prompt}'
                 token_spans.append((i, i + len(token)))
                 i += len(token)
             skipped_chars = ''.join(skipped_chars) + prompt[i:]
