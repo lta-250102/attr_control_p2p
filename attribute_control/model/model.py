@@ -9,7 +9,7 @@ from torch import nn
 from jaxtyping import Float, Integer
 from PIL import Image
 import diffusers
-from diffusers import DDIMScheduler, StableDiffusionXLImg2ImgPipeline, StableDiffusionXLPipeline
+from diffusers import DDIMScheduler, StableDiffusionXLImg2ImgPipeline, StableDiffusionImg2ImgPipeline
 from diffusers.pipelines.pipeline_utils import DiffusionPipeline
 from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion import retrieve_timesteps
 
@@ -106,8 +106,10 @@ class DiffusersModelBase(ModelBase):
         # self.pipe.safety_checker = None
         # self.pipe.set_progress_bar_config(disable=True)
 
-        img2img_pipeline_type = 'diffusers.StableDiffusionXLImg2ImgPipeline' if pipeline_type == 'diffusers.StableDiffusionXLPipeline' else 'diffusers.StableDiffusionImg2ImgPipeline'
-        self.img_pipe: DiffusionPipeline = locate(img2img_pipeline_type)(**self.pipe.components)
+        if pipeline_type == 'diffusers.StableDiffusionXLPipeline':
+            self.img_pipe: DiffusionPipeline = StableDiffusionXLImg2ImgPipeline(**self.pipe.components)
+        else:
+            self.img_pipe: DiffusionPipeline = StableDiffusionImg2ImgPipeline(**self.pipe.components)
         self.img_pipe.to(device)
         assert isinstance(self.img_pipe, DiffusionPipeline)
         # self.img_pipe.safety_checker = None
