@@ -232,7 +232,7 @@ def main():
     dataset = 'celebA'
     attrs = json.load(open(f'./data/{dataset}/attrs.json'))
     captions = json.load(open(f'./data/{dataset}/captions.json'))
-    out_path = f'./data/{dataset}/demo/'
+    out_path = f'./output/{dataset}/demo/'
     os.makedirs(out_path, exist_ok=True)
     for file, attr in attrs.items():
         _, _ = demo(attr=attr, cap=captions[file], file=file, out_path=out_path, delta_attr_name=delta_attrs)

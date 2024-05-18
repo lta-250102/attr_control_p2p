@@ -161,3 +161,8 @@ cython_debug/
 
 # Hydra output dir
 outputs/
+
+
+*.ipynb
+img_align_celeba/
+images/
