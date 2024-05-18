@@ -154,7 +154,7 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name):
         seed = random.randint(1, 1000000)
         prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
         embs, alphas = apply_deltas(attr, model.embed_prompt(prompt), delta_attr_name, prompt)
-        ori_image = model.sample_gen(embs=[embs[0]], embs_neg=[None])
+        ori_image = model.sample_gen(embs=[embs[0]], embs_neg=[None])[0]
         imgs = [ori_image]
         for emb in embs[1:]:
             img = model.sample_edit(
