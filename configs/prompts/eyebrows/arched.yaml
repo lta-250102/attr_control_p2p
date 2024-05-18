@@ -1,0 +1,31 @@
+# @package _global_
+
+tag: 'eyebrows/arched'
+
+prompts:
+- prompt_target: 'eyebrows'
+  prompt_positive: 'arched eyebrows'
+  prompt_negative: 'straight eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'angled eyebrows'
+  prompt_negative: 'straight eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'slanted eyebrows'
+  prompt_negative: 'straight eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'curved eyebrows'
+  prompt_negative: 'straight eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'very arched eyebrows'
+  prompt_negative: 'very straight eyebrows'
+  pattern_target: 'eyebrows'
+- prompt_target: 'eyebrows'
+  prompt_positive: 'very bowed eyebrows'
+  prompt_negative: 'very straight eyebrows'
+  pattern_target: 'eyebrows'
+
+prefixes: ${combinations:'{,a photo of,a portrait of,a painting of} a {,beautiful} {,asian,african-american,caucasian,white,arab,black,african,american,south-american,indian} {man, woman, person, boy, girl, lady, adult, guy} {have, has}'}
