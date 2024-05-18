@@ -3,6 +3,7 @@ import os
 import json
 import torch
 import random
+import traceback
 import numpy as np
 import matplotlib.pyplot as plt
 from attribute_control import EmbeddingDelta
@@ -183,7 +184,7 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name):
         for i in range(len(imgs)):
             imgs[i].save(f'{out_path}{file.replace(".jpg", "")}/{i}_{delta_attrs[i-1] if i > 0 else "ori"}_{alphas[delta_attrs[i-1]] if i > 0 else 0}.jpg')
     except Exception as e:
-        print(str(e.__traceback__))
+        traceback.print_exc()
 
 # def eva_delay(attr, cap, file: str, out_path: str):
 #     try:
