@@ -106,6 +106,13 @@ class DiffusersModelBase(ModelBase):
         # self.pipe.safety_checker = None
         # self.pipe.set_progress_bar_config(disable=True)
 
+        img2img_pipeline_type = 'StableDiffusionXLImg2ImgPipeline' if pipeline_type == 'StableDiffusionXLPipeline' else 'StableDiffusionImg2ImgPipeline'
+        self.img_pipe: DiffusionPipeline = locate(img2img_pipeline_type)(**self.pipe.components)
+        self.img_pipe.to(device)
+        assert isinstance(self.img_pipe, DiffusionPipeline)
+        # self.img_pipe.safety_checker = None
+        # self.img_pipe.set_progress_bar_config(disable=True)
+
         self._tokenizers = { }
 
     def _register_tokenizer(self, name: str, tokenizer, dim: int):
@@ -218,7 +225,7 @@ class DiffusersSDModelBase(DiffusersModelBase):
     def sample_edit(self, images: List[Image.Image], embs: List[PromptEmbedding], embs_neg: Optional[List[PromptEmbedding]], 
                     delay_relative: float = .2, **kwargs) -> Union[List[Image.Image], Any]:
         timesteps, _ = retrieve_timesteps(self.pipe.scheduler, kwargs.get('num_inference_steps', self.num_inference_steps), device=self.pipe.device, timesteps=kwargs.get('timesteps', None))
-        return self.pipe(**(self._get_pipe_kwargs(embs, embs_neg, start_sample=None, **kwargs) | 
+        return self.img_pipe(**(self._get_pipe_kwargs(embs, embs_neg, start_sample=None, **kwargs) | 
                             { 'strength': 1-delay_relative, 'num_inference_steps': len(timesteps), 'image': images })).images
     
     @torch.no_grad
