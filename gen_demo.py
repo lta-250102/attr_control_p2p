@@ -93,41 +93,47 @@ dir_prompt = {
 
 def get_pattern_target(prompt, attr_name):
     if attr_name == 'Narrow_Eyes':
-        return r'\b(eyes)\b'
+        pattern_target = r'\b(eyes)\b'
+        obj = 'eyes'
     elif attr_name in ['Big_Nose', 'Pointy_Nose']:
-        return r'\b(nose)\b'
+        pattern_target = r'\b(nose)\b'
+        obj = 'nose'
     elif attr_name == 'Big_Lips':
-        return r'\b(lips)\b'
+        pattern_target = r'\b(lips)\b'
+        obj = 'lips'
     elif attr_name in ['Bushy_Eyebrows', 'Arched_Eyebrows']:
-        return r'\b(eyebrows)\b'
+        pattern_target = r'\b(eyebrows)\b'
+        obj = 'eyebrows'
+
+    if attr_name in glob_attrs:
+        if 'woman' in prompt:
+            pattern_target = r'\b(woman)\b'
+            obj = 'woman'
+        elif ' man' in prompt:
+            pattern_target = r'\b(man)\b'
+            obj = 'man'
+        elif 'lady' in prompt:
+            pattern_target = r'\b(lady)\b'
+            obj = 'lady'
+        elif 'female' in prompt:
+            pattern_target = r'\b(female)\b'
+            obj = 'female'
+        elif 'guy' in prompt:
+            pattern_target = r'\b(guy)\b'
+            obj = 'guy'
+        elif ' she' in prompt:
+            pattern_target = r'\b(she)\b'
+            obj = 'she'
+        elif ' he ' in prompt:
+            pattern_target = r'\b(he)\b'
+            obj = 'he'
+        elif 'person' in prompt:
+            pattern_target = r'\b(person)\b'
+            obj = 'person'
+        elif 'adult' in prompt:
+            pattern_target = r'\b(adult)\b'
+            obj = 'adult'
     
-    if 'woman' in prompt:
-        pattern_target = r'\b(woman)\b'
-        obj = 'woman'
-    elif ' man' in prompt:
-        pattern_target = r'\b(man)\b'
-        obj = 'man'
-    elif 'lady' in prompt:
-        pattern_target = r'\b(lady)\b'
-        obj = 'lady'
-    elif 'female' in prompt:
-        pattern_target = r'\b(female)\b'
-        obj = 'female'
-    elif 'guy' in prompt:
-        pattern_target = r'\b(guy)\b'
-        obj = 'guy'
-    elif ' she' in prompt:
-        pattern_target = r'\b(she)\b'
-        obj = 'she'
-    elif ' he ' in prompt:
-        pattern_target = r'\b(he)\b'
-        obj = 'he'
-    elif 'person' in prompt:
-        pattern_target = r'\b(person)\b'
-        obj = 'person'
-    elif 'adult' in prompt:
-        pattern_target = r'\b(adult)\b'
-        obj = 'adult'
     return pattern_target, obj
 
 def apply_deltas(attr, emb, delta_names, prompt):
@@ -137,7 +143,7 @@ def apply_deltas(attr, emb, delta_names, prompt):
         alpha = attr[attrs_40.index(attr_name)] * 2
         if attr_name in ops:
             alpha = -alpha
-        pattern_target = get_pattern_target(prompt, attr_name)
+        pattern_target, _ = get_pattern_target(prompt, attr_name)
         characterwise_mask = get_mask_regex(prompt, pattern_target)
         embs.append(deltas[attr_name].apply(embs[-1], characterwise_mask, alpha))
         alphas[attr_name] = alpha
