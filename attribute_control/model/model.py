@@ -9,7 +9,7 @@ from torch import nn
 from jaxtyping import Float, Integer
 from PIL import Image
 import diffusers
-from diffusers import DDIMScheduler
+from diffusers import DDIMScheduler, StableDiffusionXLImg2ImgPipeline, StableDiffusionXLPipeline
 from diffusers.pipelines.pipeline_utils import DiffusionPipeline
 from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion import retrieve_timesteps
 
@@ -185,7 +185,9 @@ class DiffusersSDModelBase(DiffusersModelBase):
         raise NotImplementedError()
 
     @torch.no_grad
-    def sample(self, embs: List[PromptEmbedding], embs_neg: Optional[List[PromptEmbedding]], start_sample: Optional[Float[torch.Tensor, 'n c h w']] = None, start_after_relative: float = 0., cutoff_after_relative: float = 1., **kwargs) -> Union[List[Image.Image], Any]:
+    def sample(self, embs: List[PromptEmbedding], embs_neg: Optional[List[PromptEmbedding]], 
+               start_sample: Optional[Float[torch.Tensor, 'n c h w']] = None, start_after_relative: float = 0., 
+               cutoff_after_relative: float = 1., **kwargs) -> Union[List[Image.Image], Any]:
         timesteps, _ = retrieve_timesteps(self.pipe.scheduler, kwargs.get('num_inference_steps', self.num_inference_steps), device=self.pipe.device, timesteps=kwargs.get('timesteps', None))
         timesteps = timesteps[int(round(start_after_relative * len(timesteps))):int(round(cutoff_after_relative * len(timesteps)))]
         return self.pipe(**(self._get_pipe_kwargs(embs, embs_neg, start_sample=start_sample, **kwargs) | { 'timesteps': timesteps, 'num_inference_steps': len(timesteps) })).images
@@ -204,11 +206,24 @@ class DiffusersSDModelBase(DiffusersModelBase):
     #     return self.sample(controller=controller, embs=embs, embs_neg=embs_neg, start_sample=intermediate, **kwargs, start_after_relative=delay_relative)
 
     @torch.no_grad
-    def sample_delayed(self, embs: List[PromptEmbedding], embs_unmodified: List[PromptEmbedding], embs_neg: Optional[List[PromptEmbedding]], embs_neg_unmodified: Optional[List[PromptEmbedding]] = None, start_sample: Optional[Float[torch.Tensor, 'n c h w']] = None, delay_relative: float = .2, **kwargs) -> Union[List[Image.Image], Any]:
+    def sample_delayed(self, embs: List[PromptEmbedding], embs_unmodified: List[PromptEmbedding], 
+                       embs_neg: Optional[List[PromptEmbedding]], embs_neg_unmodified: Optional[List[PromptEmbedding]] = None, 
+                       start_sample: Optional[Float[torch.Tensor, 'n c h w']] = None, delay_relative: float = .2, **kwargs) -> Union[List[Image.Image], Any]:
         if delay_relative == 0:
             return self.sample(embs=embs, embs_neg=embs_neg, start_sample=start_sample, **kwargs)
         intermediate = self.sample(embs=embs_unmodified, embs_neg=(embs_neg_unmodified if not embs_neg_unmodified is None else embs_neg), start_sample=start_sample, **kwargs, output_type='latent', cutoff_after_relative=delay_relative)
         return self.sample(embs=embs, embs_neg=embs_neg, start_sample=intermediate, **kwargs, start_after_relative=delay_relative)
+
+    @torch.no_grad
+    def sample_edit(self, images: List[Image.Image], embs: List[PromptEmbedding], embs_neg: Optional[List[PromptEmbedding]], 
+                    delay_relative: float = .2, **kwargs) -> Union[List[Image.Image], Any]:
+        timesteps, _ = retrieve_timesteps(self.pipe.scheduler, kwargs.get('num_inference_steps', self.num_inference_steps), device=self.pipe.device, timesteps=kwargs.get('timesteps', None))
+        return self.pipe(**(self._get_pipe_kwargs(embs, embs_neg, start_sample=None, **kwargs) | 
+                            { 'strength': 1-delay_relative, 'num_inference_steps': len(timesteps), 'image': images })).images
+    
+    @torch.no_grad
+    def sample_gen(self, embs: List[PromptEmbedding], embs_neg: Optional[List[PromptEmbedding]], **kwargs) -> Union[List[Image.Image], Any]:
+        return self.sample(embs=embs, embs_neg=embs_neg, **kwargs)
 
     def _get_eps_pred(self, t: Integer[torch.Tensor, 'n'], sample: Float[torch.Tensor, 'n ...'], model_output: Float[torch.Tensor, 'n ...']) -> Float[torch.Tensor, 'n ...']:
         alpha_prod_t = broadcast_trailing_dims(self.pipe.scheduler.alphas_cumprod[t.to(self.pipe.scheduler.alphas_cumprod.device)].to(model_output.device), model_output)
