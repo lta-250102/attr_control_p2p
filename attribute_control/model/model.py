@@ -106,7 +106,7 @@ class DiffusersModelBase(ModelBase):
         # self.pipe.safety_checker = None
         # self.pipe.set_progress_bar_config(disable=True)
 
-        img2img_pipeline_type = 'StableDiffusionXLImg2ImgPipeline' if pipeline_type == 'StableDiffusionXLPipeline' else 'StableDiffusionImg2ImgPipeline'
+        img2img_pipeline_type = 'diffusers.StableDiffusionXLImg2ImgPipeline' if pipeline_type == 'diffusers.StableDiffusionXLPipeline' else 'diffusers.StableDiffusionImg2ImgPipeline'
         self.img_pipe: DiffusionPipeline = locate(img2img_pipeline_type)(**self.pipe.components)
         self.img_pipe.to(device)
         assert isinstance(self.img_pipe, DiffusionPipeline)
