@@ -182,7 +182,6 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name):
         os.makedirs(f'{out_path}{file.replace(".jpg", "")}/', exist_ok=True)
         for i in range(len(imgs)):
             imgs[i].save(f'{out_path}{file.replace(".jpg", "")}/{i}_{delta_attrs[i-1] if i > 0 else "ori"}_{alphas[delta_attrs[i-1]] if i > 0 else 0}.jpg')
-        return imgs, alphas
     except Exception as e:
         print(e)
 
@@ -239,7 +238,7 @@ def main():
     for file, attr in attrs.items():
         i += 1
         if i >= n: break
-        _, _ = demo(attr=attr, cap=captions[file], file=file, out_path=out_path, delta_attr_name=delta_attrs)
+        demo(attr=attr, cap=captions[file], file=file, out_path=out_path, delta_attr_name=delta_attrs)
 
 
 if __name__ == "__main__":
