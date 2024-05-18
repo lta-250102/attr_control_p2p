@@ -149,27 +149,7 @@ def apply_deltas(attr, emb, delta_names, prompt):
         alphas[attr_name] = alpha
     return embs, alphas
 
-# def gen_sample(prompt, delta_name, pattern_target, alphas):
-#     seed = random.randint(1, 1000000)
-#     characterwise_mask = get_mask_regex(prompt, pattern_target)
-#     embs = [model.embed_prompt(prompt)]
-#     for alpha in alphas:
-#         embs.append(deltas[delta_name].apply(embs[0], characterwise_mask, alpha))
-#     imgs = []
-#     for emb in embs[1:]:
-#         img = model.sample_delayed(
-#             embs=[emb],
-#             embs_unmodified=[embs[0]],
-#             embs_neg=[None],
-#             delay_relative=delay_relative,
-#             generator=torch.manual_seed(seed),
-#             guidance_scale=7.5,
-#             num_inference_steps=30,
-#         )[0]
-#         imgs.append(img)
-#     return imgs
-
-def demo(attr, cap, file: str, out_path: str, delta_attr_name):
+def demo_delay(attr, cap, file: str, out_path: str, delta_attr_name):
     try:
         seed = random.randint(1, 1000000)
         prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
@@ -192,46 +172,29 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name):
     except Exception as e:
         traceback.print_exc()
 
-# def eva_delay(attr, cap, file: str, out_path: str):
-#     try:
-#         seed = random.randint(1, 1000000)
-#         prompt = "a portrait photo with high facial detailed. " + cap.lower()
-#         delta_attr_name = random.choice(delta_attrs)
-#         embs, _ = apply_deltas(attr, model.embed_prompt(prompt), [delta_attr_name], prompt)
-#         ori_img = model.sample_delayed(
-#                   embs=[embs[0]],
-#                   embs_unmodified=[embs[0]],
-#                   embs_neg=[None],
-#                   delay_relative=0,
-#                   guidance_scale=7.5,
-#                   generator=torch.manual_seed(seed),
-#                   num_inference_steps=30,
-#         )[0].resize((256, 256))
-#         img_delay = model.sample_delayed(
-#                 embs=[embs[1]],
-#                 embs_unmodified=[embs[0]],
-#                 embs_neg=[None],
-#                 delay_relative=delay_relative,
-#                 guidance_scale=7.5,
-#                 generator=torch.manual_seed(seed),
-#                 num_inference_steps=30,
-#         )[0].resize((256, 256))
-#         img = model.sample_delayed(
-#                 embs=[embs[1]],
-#                 embs_unmodified=[embs[0]],
-#                 embs_neg=[None],
-#                 delay_relative=0,
-#                 guidance_scale=7.5,
-#                 generator=torch.manual_seed(seed),
-#                 num_inference_steps=30,
-#         )[0].resize((256, 256))
-#         for sub_dir in ['origin', 'normal', 'delay']:
-#             os.makedirs(f'{out_path}{sub_dir}/', exist_ok=True)
-#         ori_img.save(f'{out_path}origin/{file}')
-#         img_delay.save(f'{out_path}delay/{file}')
-#         img.save(f'{out_path}normal/{file}')
-#     except Exception as e:
-#         print(e)
+def demo(attr, cap, file: str, out_path: str, delta_attr_name):
+    try:
+        seed = random.randint(1, 1000000)
+        prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
+        embs, alphas = apply_deltas(attr, model.embed_prompt(prompt), delta_attr_name, prompt)
+        ori_image = model.sample(embs=[embs[0]], embs_neg=[None], guidance_scale=7.5, generator=torch.manual_seed(seed), num_inference_steps=30,)[0]
+        imgs = [ori_image]
+        for emb in embs[1:]:
+            img = model.sample_edit(
+                images=[ori_image],
+                embs=[emb],
+                embs_neg=[None],
+                delay_relative=delay_relative,
+                guidance_scale=7.5,
+                generator=torch.manual_seed(seed),
+                num_inference_steps=30,
+            )[0]
+            imgs.append(img)
+        os.makedirs(f'{out_path}{file.replace(".jpg", "")}/', exist_ok=True)
+        for i in range(len(imgs)):
+            imgs[i].save(f'{out_path}{file.replace(".jpg", "")}/{i}_{delta_attrs[i-1] if i > 0 else "ori"}_{alphas[delta_attrs[i-1]] if i > 0 else 0}.jpg')
+    except Exception as e:
+        traceback.print_exc()
 
 
 def main():
