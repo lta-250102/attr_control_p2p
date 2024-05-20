@@ -9,3 +9,4 @@ attrs_path: ./data/celebA/attrs.json
 caps_path: ./data/celebA/captions.json
 out_dir: ./outputs/celebA/demo/
 n: 1000
+skip: 1000

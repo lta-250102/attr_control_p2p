@@ -167,9 +167,11 @@ def main():
     os.makedirs(out_path, exist_ok=True)
     n = cfg.n
     i = 0
+    skip = cfg.skip
     for file, attr in attrs.items():
         i += 1
-        if i >= n: break
+        if i < skip: continue
+        if i >= skip + n: break
         demo(attr=attr, cap=captions[file], file=file, out_path=out_path, delta_attr_name=delta_attrs, 
              model=model, deltas=deltas, delay_relative=delay_relative)
 
