@@ -15,7 +15,7 @@ tag: gen_demo
 delta_path: ./pretrained_deltas/
 num_inference_steps: 30
 guidance_scale: 7.5
-
+gen_mode: True
 delta_attr_name: ['Young', 'Narrow_Eyes']
 
 hydra:

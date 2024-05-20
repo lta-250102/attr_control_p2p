@@ -143,9 +143,14 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
 @torch.no_grad()
 def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
+    gen_mode = cfg.gen_mode
     attrs = json.load(open(cfg.attrs_path))
     captions = json.load(open(cfg.caps_path))
     delta_attr_name = cfg.get('delta_attr_name', None)
+    if gen_mode:
+        delta_attr_name = None
+    else:
+        assert delta_attr_name != None, 'setup conf delta_attr_name'
     os.makedirs(cfg.out_dir, exist_ok=True)
     model: ModelBase = cfg.model
     delay_relative = cfg.delay_relative
