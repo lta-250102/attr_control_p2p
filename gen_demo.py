@@ -141,6 +141,7 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
 @hydra.main(config_path="configs", config_name="gen_demo")
 @torch.no_grad()
 def main(cfg: DictConfig):
+    print(os.getcwd())
     cfg = hydra.utils.instantiate(cfg)
     attrs = json.load(open(cfg.attrs_path))
     captions = json.load(open(cfg.caps_path))
