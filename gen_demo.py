@@ -119,7 +119,7 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
         seed = random.randint(1, 1000000)
         prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
         embs, alphas = apply_deltas(attr, model.embed_prompt(prompt), delta_attr_name, prompt, deltas)
-        ori_image = model.sample(embs=[embs[0]], embs_neg=[None], guidance_scale=7.5, generator=torch.manual_seed(seed), num_inference_steps=30,)[0]
+        ori_image = model.sample(embs=[embs[0]], embs_neg=[None], guidance_scale=guidance_scale, generator=torch.manual_seed(seed), num_inference_steps=num_inference_steps)[0]
         imgs = [ori_image]
         for emb in embs[1:]:
             img = model.sample_edit(
