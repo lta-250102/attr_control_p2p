@@ -13,7 +13,6 @@ from attribute_control.model import SDXL, SD15
 from attribute_control.model import ModelBase
 from attribute_control.prompt_utils import get_mask, get_mask_regex
 
-torch.set_float32_matmul_precision('high')
 
 attrs_40 = ['5_o_Clock_Shadow', 'Arched_Eyebrows', 'Attractive', 'Bags_Under_Eyes', 'Bald', 'Bangs', 'Big_Lips',
             'Big_Nose', 'Black_Hair', 'Blond_Hair', 'Blurry', 'Brown_Hair', 'Bushy_Eyebrows', 'Chubby', 'Double_Chin',
@@ -143,6 +142,11 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
 @torch.no_grad()
 def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
+    dataset = cfg.dataset
+    attrs = json.load(open(cfg.attrs_path))
+    captions = json.load(open(cfg.caps_path))
+    out_path = f'{cfg.out_dir}{dataset}/demo/'
+    os.makedirs(out_path, exist_ok=True)
     model: ModelBase = cfg.model
     delay_relative = cfg.delay_relative
     delta_path = cfg.delta_path
@@ -162,11 +166,6 @@ def main(cfg: DictConfig):
         'Arched_Eyebrows': get_delta(f'{delta_path}arched_eyebrows.pt', model.dims),
     }
 
-    dataset = cfg.dataset
-    attrs = json.load(open(cfg.attrs_path))
-    captions = json.load(open(cfg.caps_path))
-    out_path = f'{cfg.out_dir}{dataset}/demo/'
-    os.makedirs(out_path, exist_ok=True)
     n = cfg.n
     i = 0
     skip = cfg.skip
@@ -179,4 +178,5 @@ def main(cfg: DictConfig):
 
 
 if __name__ == "__main__":
+    torch.set_float32_matmul_precision('high')
     main()

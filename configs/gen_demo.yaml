@@ -6,10 +6,10 @@ defaults:
 run_type: gen_demo
 delay_relative: 0.2
 dataset: celebA
-attrs_path: data/${dataset}/attrs.json
-caps_path: data/${dataset}/captions.json
-out_dir: outputs/${dataset}/demo/
+attrs_path: ./data/${dataset}/attrs.json
+caps_path: ./data/${dataset}/captions.json
+out_dir: ./outputs/${dataset}/demo/
 n: 1000
 skip: 1000
 tag: gen_demo
-delta_path: pretrained_deltas/
+delta_path: ./pretrained_deltas/
