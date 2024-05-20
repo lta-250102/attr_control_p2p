@@ -152,10 +152,8 @@ def main(cfg: DictConfig):
     captions = json.load(open(cfg.caps_path))
     delta_attr_name = cfg.get('delta_attr_name', None)
     if mode == 'gen':
-        delta_attr_name = None
-    elif mode == 'demo':
-        assert delta_attr_name != None, 'setup conf delta_attr_name'
-    elif mode == 'edit':
+        delta_attr_name = None 
+    else:
         assert delta_attr_name != None, 'setup conf delta_attr_name'
     os.makedirs(cfg.out_dir, exist_ok=True)
     model: ModelBase = cfg.model
@@ -184,6 +182,8 @@ def main(cfg: DictConfig):
         i += 1
         if i < skip: continue
         if i >= skip + n: break
+        if mode == 'edit':
+            assert os.path.exists(f'{cfg.out_dir}{file.replace(".jpg", "")}/0_ori_0.jpg')
         demo(attr=attr, cap=captions[file], file=file, out_path=cfg.out_dir, delta_attr_name=delta_attr_name, 
              model=model, deltas=deltas, delay_relative=delay_relative, guidance_scale=cfg.guidance_scale, 
              num_inference_steps=cfg.num_inference_steps, mode=mode)
