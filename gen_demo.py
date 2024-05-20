@@ -6,6 +6,7 @@ import torch
 import random
 import traceback
 import numpy as np
+from omegaconf import DictConfig
 import matplotlib.pyplot as plt
 from attribute_control import EmbeddingDelta
 from attribute_control.model import SDXL, SD15
@@ -140,7 +141,7 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
 
 @hydra.main(config_path="configs", config_name="gen_demo")
 @torch.no_grad()
-def main():
+def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
     model: ModelBase = cfg.model
     delay_relative = cfg.delay_relative
