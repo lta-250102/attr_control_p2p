@@ -68,7 +68,7 @@ def main(cfg: DictConfig):
             num_inference_steps=30,
         )[0]
         imgs.append(img)
-        img.save(Path('./demo') / f'{alpha}_{cfg.tag}.jpg')
+        img.save(Path('./demo_train') / f'{alpha}_{cfg.tag.replace('/', '_')}.jpg')
 
 if __name__ == "__main__":
     main()
