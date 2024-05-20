@@ -49,26 +49,26 @@ def main(cfg: DictConfig):
         'delta': delta.cpu().state_dict(),
     }, checkpoint_path)
 
-    i = random.randint(0, len(targets)-1)
-    delta = delta.to('cuda')
-    prompt = "4k, crime, portrait, detail, a portrait photo with high facial detailed of a person. " + ex_prompts[i].lower() 
-    pattern_target = fr'\b({targets[i]})\b'
-    characterwise_mask = get_mask_regex(prompt, pattern_target)
-    emb = model.embed_prompt(prompt) 
-    imgs = []
-    Path('./demo').mkdir(exist_ok=True)
-    for alpha in [0, 2]:
-        img: Image.Image = model.sample_delayed(
-            embs=[delta.apply(emb, characterwise_mask, alpha)],
-            embs_unmodified=[emb],
-            embs_neg=[None],
-            delay_relative=0.2,
-            generator=torch.manual_seed(42),
-            guidance_scale=7.5,
-            num_inference_steps=30,
-        )[0]
-        imgs.append(img)
-        img.save(f"./demo_train/{alpha}_{cfg.tag.replace('/', '_')}.jpg")
+    # i = random.randint(0, len(targets)-1)
+    # delta = delta.to('cuda')
+    # prompt = "4k, crime, portrait, detail, a portrait photo with high facial detailed of a person. " + ex_prompts[i].lower() 
+    # pattern_target = fr'\b({targets[i]})\b'
+    # characterwise_mask = get_mask_regex(prompt, pattern_target)
+    # emb = model.embed_prompt(prompt) 
+    # imgs = []
+    # Path('./demo_train').mkdir(exist_ok=True)
+    # for alpha in [0, 2]:
+    #     img: Image.Image = model.sample_delayed(
+    #         embs=[delta.apply(emb, characterwise_mask, alpha)],
+    #         embs_unmodified=[emb],
+    #         embs_neg=[None],
+    #         delay_relative=0.2,
+    #         generator=torch.manual_seed(42),
+    #         guidance_scale=7.5,
+    #         num_inference_steps=30,
+    #     )[0]
+    #     imgs.append(img)
+    #     img.save(f"./demo_train/{alpha}_{cfg.tag.replace('/', '_')}.jpg")
 
 if __name__ == "__main__":
     main()
