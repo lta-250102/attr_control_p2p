@@ -1,5 +1,4 @@
 defaults:
-  - base
   - model: sdxl
   - _self_
 
@@ -13,4 +12,3 @@ n: 1000
 skip: 1000
 tag: gen_demo
 delta_path: ./pretrained_deltas/
-dir: ./
