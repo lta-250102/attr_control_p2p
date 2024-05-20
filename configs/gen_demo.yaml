@@ -13,3 +13,7 @@ skip: 1000
 device: cuda
 tag: gen_demo
 delta_path: ./pretrained_deltas/
+
+hydra:
+  run:
+    dir: ./
