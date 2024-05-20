@@ -142,11 +142,9 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
 @torch.no_grad()
 def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
-    dataset = cfg.dataset
     attrs = json.load(open(cfg.attrs_path))
     captions = json.load(open(cfg.caps_path))
-    out_path = f'{cfg.out_dir}{dataset}/demo/'
-    os.makedirs(out_path, exist_ok=True)
+    os.makedirs(cfg.out_dir, exist_ok=True)
     model: ModelBase = cfg.model
     delay_relative = cfg.delay_relative
     delta_path = cfg.delta_path
@@ -173,7 +171,7 @@ def main(cfg: DictConfig):
         i += 1
         if i < skip: continue
         if i >= skip + n: break
-        demo(attr=attr, cap=captions[file], file=file, out_path=out_path, delta_attr_name=delta_attrs, 
+        demo(attr=attr, cap=captions[file], file=file, out_path=cfg.out_dir, delta_attr_name=delta_attrs, 
              model=model, deltas=deltas, delay_relative=delay_relative)
 
 
