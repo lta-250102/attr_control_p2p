@@ -138,7 +138,7 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
     except Exception as e:
         traceback.print_exc()
 
-@hydra.main(config_path="configs", config_name="gen_demo")
+@hydra.main(config_path="../configs", config_name="gen_demo")
 @torch.no_grad()
 def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
