@@ -19,8 +19,8 @@ attrs_40 = ['5_o_Clock_Shadow', 'Arched_Eyebrows', 'Attractive', 'Bags_Under_Eye
             'Mustache', 'Narrow_Eyes', 'No_Beard', 'Oval_Face', 'Pale_Skin', 'Pointy_Nose', 'Receding_Hairline',
             'Rosy_Cheeks', 'Sideburns', 'Smiling', 'Straight_Hair', 'Wavy_Hair', 'Wearing_Earrings', 'Wearing_Hat',
             'Wearing_Lipstick', 'Wearing_Necklace', 'Wearing_Necktie', 'Young']
-delta_attrs = ['Bald', 'Young', 'Pale_Skin', 'Heavy_Makeup', 'Smiling', 'Wavy_Hair', 'Chubby', 
-               'Narrow_Eyes', 'Big_Nose', 'Big_Lips', 'Bushy_Eyebrows', 'Arched_Eyebrows', 'Pointy_Nose']
+# delta_attrs = ['Bald', 'Young', 'Pale_Skin', 'Heavy_Makeup', 'Smiling', 'Wavy_Hair', 'Chubby', 
+#                'Narrow_Eyes', 'Big_Nose', 'Big_Lips', 'Bushy_Eyebrows', 'Arched_Eyebrows', 'Pointy_Nose']
 
 def get_delta(path, dims):
     delta = EmbeddingDelta(dims)
@@ -109,7 +109,7 @@ def demo_delay(attr, cap, file: str, out_path: str, delta_attr_name, model, delt
             imgs.append(img)
         os.makedirs(f'{out_path}{file.replace(".jpg", "")}/', exist_ok=True)
         for i in range(len(imgs)):
-            imgs[i].save(f'{out_path}{file.replace(".jpg", "")}/{i}_{delta_attrs[i-1] if i > 0 else "ori"}_{alphas[delta_attrs[i-1]] if i > 0 else 0}.jpg')
+            imgs[i].save(f'{out_path}{file.replace(".jpg", "")}/{i}_{delta_attr_name[i-1] if i > 0 else "ori"}_{alphas[delta_attr_name[i-1]] if i > 0 else 0}.jpg')
     except Exception as e:
         traceback.print_exc()
 
@@ -135,7 +135,7 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
                 imgs.append(img)
         os.makedirs(f'{out_path}{file.replace(".jpg", "")}/', exist_ok=True)
         for i in range(len(imgs)):
-            imgs[i].save(f'{out_path}{file.replace(".jpg", "")}/{i}_{delta_attrs[i-1] if i > 0 else "ori"}_{alphas[delta_attrs[i-1]] if i > 0 else 0}.jpg')
+            imgs[i].save(f'{out_path}{file.replace(".jpg", "")}/{i}_{delta_attr_name[i-1] if i > 0 else "ori"}_{alphas[delta_attr_name[i-1]] if i > 0 else 0}.jpg')
     except Exception as e:
         traceback.print_exc()
 
