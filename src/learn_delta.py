@@ -33,7 +33,7 @@ class PromptCombinationDataset(Dataset):
         return { k: (f'{prefix} {v}' if 'prompt' in k else v) for k, v in self.prompts[i_prompt].items() }
 
 
-@hydra.main(config_path="configs", config_name="learn_delta")
+@hydra.main(config_path="../configs", config_name="learn_delta")
 def main(cfg: DictConfig):
     logger = logging.getLogger(__name__)
     print(cfg)

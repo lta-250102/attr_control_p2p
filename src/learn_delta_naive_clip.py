@@ -12,7 +12,7 @@ from attribute_control.model import ModelBase
 from attribute_control.prompt_utils import get_mask_regex
 
 
-@hydra.main(config_path="configs", config_name="learn_delta_naive_clip")
+@hydra.main(config_path="../configs", config_name="learn_delta_naive_clip")
 @torch.no_grad()
 def main(cfg: DictConfig):
     print(cfg)
