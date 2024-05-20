@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import hydra
 import torch
 import random
 import traceback
@@ -8,21 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from attribute_control import EmbeddingDelta
 from attribute_control.model import SDXL, SD15
+from attribute_control.model import ModelBase
 from attribute_control.prompt_utils import get_mask, get_mask_regex
 
 torch.set_float32_matmul_precision('high')
-
-DEVICE = 'cuda:0'
-DTYPE = torch.float16
-
-model = SDXL(
-    pipeline_type='diffusers.StableDiffusionXLPipeline',
-    model_name='stabilityai/stable-diffusion-xl-base-1.0',
-    pipe_kwargs={ 'torch_dtype': DTYPE, 'variant': 'fp16', 'use_safetensors': True },
-    device=DEVICE
-)
-
-delay_relative = 0.20
 
 attrs_40 = ['5_o_Clock_Shadow', 'Arched_Eyebrows', 'Attractive', 'Bags_Under_Eyes', 'Bald', 'Bangs', 'Big_Lips',
             'Big_Nose', 'Black_Hair', 'Blond_Hair', 'Blurry', 'Brown_Hair', 'Bushy_Eyebrows', 'Chubby', 'Double_Chin',
@@ -33,63 +23,15 @@ attrs_40 = ['5_o_Clock_Shadow', 'Arched_Eyebrows', 'Attractive', 'Bags_Under_Eye
 delta_attrs = ['Bald', 'Young', 'Pale_Skin', 'Heavy_Makeup', 'Smiling', 'Wavy_Hair', 'Chubby', 
                'Narrow_Eyes', 'Big_Nose', 'Big_Lips', 'Bushy_Eyebrows', 'Arched_Eyebrows', 'Pointy_Nose']
 
-def get_delta(path):
-    delta = EmbeddingDelta(model.dims)
+def get_delta(path, dims):
+    delta = EmbeddingDelta(dims)
     state_dict = torch.load(path)
     delta.load_state_dict(state_dict['delta'])
-    delta = delta.to(DEVICE)
+    delta = delta.to('cuda:0')
     return delta
-
-deltas = {
-    'Bald': get_delta('./pretrained_deltas/person_bald.pt'),
-    'Young': get_delta('./pretrained_deltas/person_age.pt'),
-    'Pale_Skin': get_delta('./pretrained_deltas/person_pale.pt'),
-    'Heavy_Makeup': get_delta('./pretrained_deltas/person_makeup.pt'),
-    'Smiling': get_delta('./pretrained_deltas/person_smile.pt'),
-    'Wavy_Hair': get_delta('./pretrained_deltas/person_curly_hair.pt'),
-    'Chubby': get_delta('./pretrained_deltas/person_width.pt'),
-    'Narrow_Eyes': get_delta('./pretrained_deltas/big_eyes.pt'),
-    'Big_Nose': get_delta('./pretrained_deltas/big_nose.pt'),
-    'Big_Lips': get_delta('./pretrained_deltas/thin_lips.pt'),
-    'Bushy_Eyebrows': get_delta('./pretrained_deltas/bushy_eyebrows.pt'),
-    'Pointy_Nose': get_delta('./pretrained_deltas/pointy_nose.pt'),
-    'Arched_Eyebrows': get_delta('./pretrained_deltas/arched_eyebrows.pt'),
-}
 
 glob_attrs = ['Bald', 'Young', 'Pale_Skin', 'Heavy_Makeup', 'Smiling', 'Wavy_Hair', 'Chubby']
 ops = ['Young', 'Big_Lips', 'Narrow_Eyes']
-
-dir_prompt = {
-    'Bald': {
-        'pos': 'bald',
-        'neg': 'bearded'
-    },
-    'Young': {
-        'pos': 'young',
-        'neg': 'old'
-    },
-    'Pale_Skin': {
-        'pos': 'pale',
-        'neg': 'ruddy'
-    },
-    'Heavy_Makeup': {
-        'pos': 'heavy makeup',
-        'neg': 'slightly makeup'
-    },
-    'Smiling': {
-        'pos': 'smiling',
-        'neg': 'angry'
-    },
-    'Wavy_Hair': {
-        'pos': 'wavy hair',
-        'neg': 'straight hair'
-    },
-    'Chubby': {
-        'pos': 'chubby',
-        'neg': 'lean'
-    },
-}
-
 
 def get_pattern_target(prompt, attr_name):
     if attr_name == 'Narrow_Eyes':
@@ -136,7 +78,7 @@ def get_pattern_target(prompt, attr_name):
     
     return pattern_target, obj
 
-def apply_deltas(attr, emb, delta_names, prompt):
+def apply_deltas(attr, emb, delta_names, prompt, deltas):
     embs = [emb]
     alphas = {}
     for attr_name in delta_names:
@@ -149,11 +91,11 @@ def apply_deltas(attr, emb, delta_names, prompt):
         alphas[attr_name] = alpha
     return embs, alphas
 
-def demo_delay(attr, cap, file: str, out_path: str, delta_attr_name):
+def demo_delay(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, delay_relative):
     try:
         seed = random.randint(1, 1000000)
         prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
-        embs, alphas = apply_deltas(attr, model.embed_prompt(prompt), delta_attr_name, prompt)
+        embs, alphas = apply_deltas(attr, model.embed_prompt(prompt), delta_attr_name, prompt, deltas)
         imgs = []
         for emb in embs:
             img = model.sample_delayed(
@@ -172,11 +114,11 @@ def demo_delay(attr, cap, file: str, out_path: str, delta_attr_name):
     except Exception as e:
         traceback.print_exc()
 
-def demo(attr, cap, file: str, out_path: str, delta_attr_name):
+def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, delay_relative):
     try:
         seed = random.randint(1, 1000000)
         prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
-        embs, alphas = apply_deltas(attr, model.embed_prompt(prompt), delta_attr_name, prompt)
+        embs, alphas = apply_deltas(attr, model.embed_prompt(prompt), delta_attr_name, prompt, deltas)
         ori_image = model.sample(embs=[embs[0]], embs_neg=[None], guidance_scale=7.5, generator=torch.manual_seed(seed), num_inference_steps=30,)[0]
         imgs = [ori_image]
         for emb in embs[1:]:
@@ -196,19 +138,40 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name):
     except Exception as e:
         traceback.print_exc()
 
-
+@hydra.main(config_path="configs", config_name="gen_demo")
+@torch.no_grad()
 def main():
-    dataset = 'celebA'
-    attrs = json.load(open(f'./data/{dataset}/attrs.json'))
-    captions = json.load(open(f'./data/{dataset}/captions.json'))
-    out_path = f'./output/{dataset}/demo/'
+    cfg = hydra.utils.instantiate(cfg)
+    model: ModelBase = cfg.model
+    delay_relative = cfg.delay_relative
+    deltas = {
+        'Bald': get_delta('./pretrained_deltas/person_bald.pt', model.dims),
+        'Young': get_delta('./pretrained_deltas/person_age.pt', model.dims),
+        'Pale_Skin': get_delta('./pretrained_deltas/person_pale.pt', model.dims),
+        'Heavy_Makeup': get_delta('./pretrained_deltas/person_makeup.pt', model.dims),
+        'Smiling': get_delta('./pretrained_deltas/person_smile.pt', model.dims),
+        'Wavy_Hair': get_delta('./pretrained_deltas/person_curly_hair.pt', model.dims),
+        'Chubby': get_delta('./pretrained_deltas/person_width.pt', model.dims),
+        'Narrow_Eyes': get_delta('./pretrained_deltas/big_eyes.pt', model.dims),
+        'Big_Nose': get_delta('./pretrained_deltas/big_nose.pt', model.dims),
+        'Big_Lips': get_delta('./pretrained_deltas/thin_lips.pt', model.dims),
+        'Bushy_Eyebrows': get_delta('./pretrained_deltas/bushy_eyebrows.pt', model.dims),
+        'Pointy_Nose': get_delta('./pretrained_deltas/pointy_nose.pt', model.dims),
+        'Arched_Eyebrows': get_delta('./pretrained_deltas/arched_eyebrows.pt', model.dims),
+    }
+
+    dataset = cfg.dataset
+    attrs = json.load(open(cfg.attrs_path))
+    captions = json.load(open(cfg.caps_path))
+    out_path = f'{cfg.out_dir}{dataset}/demo/'
     os.makedirs(out_path, exist_ok=True)
-    n = 1000
+    n = cfg.n
     i = 0
     for file, attr in attrs.items():
         i += 1
         if i >= n: break
-        demo(attr=attr, cap=captions[file], file=file, out_path=out_path, delta_attr_name=delta_attrs)
+        demo(attr=attr, cap=captions[file], file=file, out_path=out_path, delta_attr_name=delta_attrs, 
+             model=model, deltas=deltas, delay_relative=delay_relative)
 
 
 if __name__ == "__main__":

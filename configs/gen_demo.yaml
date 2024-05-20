@@ -1,0 +1,11 @@
+defaults:
+  - base
+  - model: sdxl
+
+run_type: gen_demo
+delay_relative: 0.2
+dataset: celebA
+attrs_path: ./data/celebA/attrs.json
+caps_path: ./data/celebA/captions.json
+out_dir: ./outputs/celebA/demo/
+n: 1000
