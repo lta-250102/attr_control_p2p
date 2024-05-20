@@ -114,7 +114,7 @@ def demo_delay(attr, cap, file: str, out_path: str, delta_attr_name, model, delt
     except Exception as e:
         traceback.print_exc()
 
-def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, delay_relative):
+def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, delay_relative, guidance_scale, num_inference_steps):
     try:
         seed = random.randint(1, 1000000)
         prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
@@ -127,9 +127,9 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
                 embs=[emb],
                 embs_neg=[None],
                 delay_relative=delay_relative,
-                guidance_scale=7.5,
+                guidance_scale=guidance_scale,
                 generator=torch.manual_seed(seed),
-                num_inference_steps=30,
+                num_inference_steps=num_inference_steps,
             )[0]
             imgs.append(img)
         os.makedirs(f'{out_path}{file.replace(".jpg", "")}/', exist_ok=True)
@@ -141,8 +141,6 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
 @hydra.main(config_path="configs", config_name="gen_demo")
 @torch.no_grad()
 def main(cfg: DictConfig):
-    print('-----------------------------------------------')
-    print(os.getcwd())
     cfg = hydra.utils.instantiate(cfg)
     attrs = json.load(open(cfg.attrs_path))
     captions = json.load(open(cfg.caps_path))
@@ -174,7 +172,8 @@ def main(cfg: DictConfig):
         if i < skip: continue
         if i >= skip + n: break
         demo(attr=attr, cap=captions[file], file=file, out_path=cfg.out_dir, delta_attr_name=delta_attrs, 
-             model=model, deltas=deltas, delay_relative=delay_relative)
+             model=model, deltas=deltas, delay_relative=delay_relative, guidance_scale=cfg.guidance_scale, 
+             num_inference_steps=cfg.num_inference_steps)
 
 
 if __name__ == "__main__":

@@ -13,6 +13,8 @@ skip: 1000
 device: cuda
 tag: gen_demo
 delta_path: ./pretrained_deltas/
+num_inference_steps: 30
+guidance_scale: 7.5
 
 hydra:
   run:
