@@ -6,6 +6,7 @@ import torch
 import random
 import traceback
 import numpy as np
+from PIL import Image
 from omegaconf import DictConfig
 import matplotlib.pyplot as plt
 from attribute_control import EmbeddingDelta
@@ -113,12 +114,15 @@ def demo_delay(attr, cap, file: str, out_path: str, delta_attr_name, model, delt
     except Exception as e:
         traceback.print_exc()
 
-def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, delay_relative, guidance_scale, num_inference_steps):
+def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, delay_relative, guidance_scale, num_inference_steps, mode):
     try:
         seed = random.randint(1, 1000000)
         prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
         emb = model.embed_prompt(prompt)
-        ori_image = model.sample(embs=[emb], embs_neg=[None], guidance_scale=guidance_scale, generator=torch.manual_seed(seed), num_inference_steps=num_inference_steps)[0]
+        if mode != 'edit':
+            ori_image = model.sample(embs=[emb], embs_neg=[None], guidance_scale=guidance_scale, generator=torch.manual_seed(seed), num_inference_steps=num_inference_steps)[0]
+        else:
+            ori_image = Image.open(f'{out_path}{file.replace(".jpg", "")}/0_ori_0.jpg')
         imgs = [ori_image]
         if delta_attr_name != None:
             embs, alphas = apply_deltas(attr, emb, delta_attr_name, prompt, deltas)
@@ -143,13 +147,15 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
 @torch.no_grad()
 def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
-    gen_mode = cfg.gen_mode
+    mode = cfg.mode
     attrs = json.load(open(cfg.attrs_path))
     captions = json.load(open(cfg.caps_path))
     delta_attr_name = cfg.get('delta_attr_name', None)
-    if gen_mode:
+    if mode == 'gen':
         delta_attr_name = None
-    else:
+    elif mode == 'demo':
+        assert delta_attr_name != None, 'setup conf delta_attr_name'
+    elif mode == 'edit':
         assert delta_attr_name != None, 'setup conf delta_attr_name'
     os.makedirs(cfg.out_dir, exist_ok=True)
     model: ModelBase = cfg.model
@@ -180,7 +186,7 @@ def main(cfg: DictConfig):
         if i >= skip + n: break
         demo(attr=attr, cap=captions[file], file=file, out_path=cfg.out_dir, delta_attr_name=delta_attr_name, 
              model=model, deltas=deltas, delay_relative=delay_relative, guidance_scale=cfg.guidance_scale, 
-             num_inference_steps=cfg.num_inference_steps)
+             num_inference_steps=cfg.num_inference_steps, mode=mode)
 
 
 if __name__ == "__main__":
