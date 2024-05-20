@@ -12,3 +12,4 @@ out_dir: ./outputs/celebA/demo/
 n: 1000
 skip: 1000
 tag: gen_demo
+delta_path: ./pretrained_deltas/

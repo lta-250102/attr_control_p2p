@@ -145,20 +145,21 @@ def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
     model: ModelBase = cfg.model
     delay_relative = cfg.delay_relative
+    delta_path = cfg.delta_path
     deltas = {
-        'Bald': get_delta('./pretrained_deltas/person_bald.pt', model.dims),
-        'Young': get_delta('./pretrained_deltas/person_age.pt', model.dims),
-        'Pale_Skin': get_delta('./pretrained_deltas/person_pale.pt', model.dims),
-        'Heavy_Makeup': get_delta('./pretrained_deltas/person_makeup.pt', model.dims),
-        'Smiling': get_delta('./pretrained_deltas/person_smile.pt', model.dims),
-        'Wavy_Hair': get_delta('./pretrained_deltas/person_curly_hair.pt', model.dims),
-        'Chubby': get_delta('./pretrained_deltas/person_width.pt', model.dims),
-        'Narrow_Eyes': get_delta('./pretrained_deltas/big_eyes.pt', model.dims),
-        'Big_Nose': get_delta('./pretrained_deltas/big_nose.pt', model.dims),
-        'Big_Lips': get_delta('./pretrained_deltas/thin_lips.pt', model.dims),
-        'Bushy_Eyebrows': get_delta('./pretrained_deltas/bushy_eyebrows.pt', model.dims),
-        'Pointy_Nose': get_delta('./pretrained_deltas/pointy_nose.pt', model.dims),
-        'Arched_Eyebrows': get_delta('./pretrained_deltas/arched_eyebrows.pt', model.dims),
+        'Bald': get_delta(f'{delta_path}person_bald.pt', model.dims),
+        'Young': get_delta(f'{delta_path}person_age.pt', model.dims),
+        'Pale_Skin': get_delta(f'{delta_path}person_pale.pt', model.dims),
+        'Heavy_Makeup': get_delta(f'{delta_path}person_makeup.pt', model.dims),
+        'Smiling': get_delta(f'{delta_path}person_smile.pt', model.dims),
+        'Wavy_Hair': get_delta(f'{delta_path}person_curly_hair.pt', model.dims),
+        'Chubby': get_delta(f'{delta_path}person_width.pt', model.dims),
+        'Narrow_Eyes': get_delta(f'{delta_path}big_eyes.pt', model.dims),
+        'Big_Nose': get_delta(f'{delta_path}big_nose.pt', model.dims),
+        'Big_Lips': get_delta(f'{delta_path}thin_lips.pt', model.dims),
+        'Bushy_Eyebrows': get_delta(f'{delta_path}bushy_eyebrows.pt', model.dims),
+        'Pointy_Nose': get_delta(f'{delta_path}pointy_nose.pt', model.dims),
+        'Arched_Eyebrows': get_delta(f'{delta_path}arched_eyebrows.pt', model.dims),
     }
 
     dataset = cfg.dataset
