@@ -1,6 +1,7 @@
 defaults:
   - base
   - model: sdxl
+  - _self_
 
 run_type: gen_demo
 delay_relative: 0.2
