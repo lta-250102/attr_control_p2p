@@ -117,20 +117,22 @@ def demo(attr, cap, file: str, out_path: str, delta_attr_name, model, deltas, de
     try:
         seed = random.randint(1, 1000000)
         prompt = "a portrait photo with high facial detailed of a person with all eyes, nose, eyebrows and lips." + cap.lower()
-        embs, alphas = apply_deltas(attr, model.embed_prompt(prompt), delta_attr_name, prompt, deltas)
-        ori_image = model.sample(embs=[embs[0]], embs_neg=[None], guidance_scale=guidance_scale, generator=torch.manual_seed(seed), num_inference_steps=num_inference_steps)[0]
+        emb = model.embed_prompt(prompt)
+        ori_image = model.sample(embs=[emb], embs_neg=[None], guidance_scale=guidance_scale, generator=torch.manual_seed(seed), num_inference_steps=num_inference_steps)[0]
         imgs = [ori_image]
-        for emb in embs[1:]:
-            img = model.sample_edit(
-                images=[ori_image],
-                embs=[emb],
-                embs_neg=[None],
-                delay_relative=delay_relative,
-                guidance_scale=guidance_scale,
-                generator=torch.manual_seed(seed),
-                num_inference_steps=num_inference_steps,
-            )[0]
-            imgs.append(img)
+        if delta_attr_name != None:
+            embs, alphas = apply_deltas(attr, emb, delta_attr_name, prompt, deltas)
+            for emb in embs[1:]:
+                img = model.sample_edit(
+                    images=[ori_image],
+                    embs=[emb],
+                    embs_neg=[None],
+                    delay_relative=delay_relative,
+                    guidance_scale=guidance_scale,
+                    generator=torch.manual_seed(seed),
+                    num_inference_steps=num_inference_steps,
+                )[0]
+                imgs.append(img)
         os.makedirs(f'{out_path}{file.replace(".jpg", "")}/', exist_ok=True)
         for i in range(len(imgs)):
             imgs[i].save(f'{out_path}{file.replace(".jpg", "")}/{i}_{delta_attrs[i-1] if i > 0 else "ori"}_{alphas[delta_attrs[i-1]] if i > 0 else 0}.jpg')
@@ -143,6 +145,7 @@ def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
     attrs = json.load(open(cfg.attrs_path))
     captions = json.load(open(cfg.caps_path))
+    delta_attr_name = cfg.get('delta_attr_name', None)
     os.makedirs(cfg.out_dir, exist_ok=True)
     model: ModelBase = cfg.model
     delay_relative = cfg.delay_relative
@@ -170,7 +173,7 @@ def main(cfg: DictConfig):
         i += 1
         if i < skip: continue
         if i >= skip + n: break
-        demo(attr=attr, cap=captions[file], file=file, out_path=cfg.out_dir, delta_attr_name=delta_attrs, 
+        demo(attr=attr, cap=captions[file], file=file, out_path=cfg.out_dir, delta_attr_name=delta_attr_name, 
              model=model, deltas=deltas, delay_relative=delay_relative, guidance_scale=cfg.guidance_scale, 
              num_inference_steps=cfg.num_inference_steps)
 

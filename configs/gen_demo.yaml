@@ -16,6 +16,8 @@ delta_path: ./pretrained_deltas/
 num_inference_steps: 30
 guidance_scale: 7.5
 
+delta_attr_name: ['Young', 'Narrow_Eyes']
+
 hydra:
   run:
     dir: ./
