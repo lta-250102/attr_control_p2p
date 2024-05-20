@@ -8,10 +8,10 @@ import traceback
 import numpy as np
 from omegaconf import DictConfig
 import matplotlib.pyplot as plt
-from attribute_control import EmbeddingDelta
-from attribute_control.model import SDXL, SD15
-from attribute_control.model import ModelBase
-from attribute_control.prompt_utils import get_mask, get_mask_regex
+from ..attribute_control import EmbeddingDelta
+from ..attribute_control.model import SDXL, SD15
+from ..attribute_control.model import ModelBase
+from ..attribute_control.prompt_utils import get_mask, get_mask_regex
 
 
 attrs_40 = ['5_o_Clock_Shadow', 'Arched_Eyebrows', 'Attractive', 'Bags_Under_Eyes', 'Bald', 'Bangs', 'Big_Lips',
