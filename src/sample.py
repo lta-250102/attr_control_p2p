@@ -179,7 +179,7 @@ def main(cfg: DictConfig):
             imgs[i].save(f'{cfg.out_dir}{mode}/{img_name}/{i+1}_{attr_name}_{alphas[attr_name]}.jpg')
     elif mode == 'both':
         alphas: dict = dict(zip(cfg.deltas, cfg.alphas))
-        imgs = edit(cfg.prompt, model, alphas, deltas, cfg.delay_relative, cfg.guidance_scale, cfg.num_inference_steps, cfg.get('seed', None))
+        imgs = both(cfg.prompt, model, alphas, deltas, cfg.delay_relative, cfg.guidance_scale, cfg.num_inference_steps, cfg.get('seed', None))
         img_name = cfg.get('img_name', datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
         os.makedirs(f'{cfg.out_dir}{mode}/{img_name}/', exist_ok=True)
         for i in range(len(imgs)):
