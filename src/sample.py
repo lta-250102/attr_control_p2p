@@ -144,6 +144,7 @@ def both(cap, model, alphas: dict, deltas: dict, delay_relative, guidance_scale,
 def main(cfg: DictConfig):
     cfg = hydra.utils.instantiate(cfg)
     mode = cfg.mode
+    model: ModelBase = cfg.model
     if mode != 'gen':
         delta_path = cfg.delta_path
         deltas = {
@@ -161,7 +162,6 @@ def main(cfg: DictConfig):
             'Pointy_Nose': get_delta(f'{delta_path}pointy_nose.pt', model.dims),
             'Arched_Eyebrows': get_delta(f'{delta_path}arched_eyebrows.pt', model.dims),
         }
-    model: ModelBase = cfg.model
 
     if mode == 'gen':
         img = gen([cfg.prompt], model, cfg.guidance_scale, cfg.num_inference_steps, [cfg.get('seed', None)])[0]

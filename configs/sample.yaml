@@ -14,7 +14,7 @@ out_dir: ./outputs/sample/
 img_name: ${now:%Y-%m-%d}_${now:%H-%M-%S}
 deltas: ['Young', 'Narrow_Eyes']
 alphas: [2, -2]
-# ori_img_path: 
+ori_img_path: abc
 
 hydra:
   run:
