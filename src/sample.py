@@ -164,7 +164,7 @@ def main(cfg: DictConfig):
     model: ModelBase = cfg.model
 
     if mode == 'gen':
-        img = gen(cfg.prompt, model, cfg.guidance_scale, cfg.num_inference_steps, cfg.get('seed', None))
+        img = gen([cfg.prompt], model, cfg.guidance_scale, cfg.num_inference_steps, [cfg.get('seed', None)])[0]
         os.makedirs(f'{cfg.out_dir}{mode}/', exist_ok=True)
         img_name = cfg.get('img_name', datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
         img.save(f'{cfg.out_dir}{mode}/{img_name}.jpg')
