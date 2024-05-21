@@ -166,13 +166,13 @@ def main(cfg: DictConfig):
     if mode == 'gen':
         img = gen(cfg.prompt, model, cfg.guidance_scale, cfg.num_inference_steps, cfg.get('seed', None))
         os.makedirs(f'{cfg.out_dir}{mode}/', exist_ok=True)
-        img_name = cfg.get('img_name', datetime.now().strftime("%d_%m_%Y__%H_%M_%S"))
+        img_name = cfg.get('img_name', datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
         img.save(f'{cfg.out_dir}{mode}/{img_name}.jpg')
     elif mode == 'edit':
         ori_img = Image.open(cfg.ori_img_path)
         alphas: dict = dict(zip(cfg.deltas, cfg.alphas))
         imgs = edit(cfg.prompt, ori_img, model, alphas, deltas, cfg.delay_relative, cfg.guidance_scale, cfg.num_inference_steps, cfg.get('seed', None))
-        img_name = cfg.get('img_name', datetime.now().strftime("%d_%m_%Y__%H_%M_%S"))
+        img_name = cfg.get('img_name', datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
         os.makedirs(f'{cfg.out_dir}{mode}/{img_name}/', exist_ok=True)
         for i in range(len(imgs)):
             attr_name = list(alphas.keys())[i]
@@ -180,7 +180,7 @@ def main(cfg: DictConfig):
     elif mode == 'both':
         alphas: dict = dict(zip(cfg.deltas, cfg.alphas))
         imgs = edit(cfg.prompt, model, alphas, deltas, cfg.delay_relative, cfg.guidance_scale, cfg.num_inference_steps, cfg.get('seed', None))
-        img_name = cfg.get('img_name', datetime.now().strftime("%d_%m_%Y__%H_%M_%S"))
+        img_name = cfg.get('img_name', datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
         os.makedirs(f'{cfg.out_dir}{mode}/{img_name}/', exist_ok=True)
         for i in range(len(imgs)):
             attr_name = list(alphas.keys())[i] if i > 0 else 'ori'

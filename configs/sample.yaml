@@ -11,7 +11,7 @@ guidance_scale: 7.5
 delay_relative: 0.2
 seed: 100000
 out_dir: ./outputs/sample/
-# img_name: abc
+img_name: ${now:%Y-%m-%d}_${now:%H-%M-%S}
 deltas: ['Young', 'Narrow_Eyes']
 alphas: [2, -2]
 # ori_img_path: 
