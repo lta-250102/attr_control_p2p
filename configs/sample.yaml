@@ -1,0 +1,30 @@
+defaults:
+  - model: sdxl
+  - _self_
+
+device: cuda
+mode: gen # gen, edit, both
+delta_path: ./pretrained_deltas/
+prompt: abc
+num_inference_steps: 30
+guidance_scale: 7.5
+delay_relative: 0.2
+seed: 100000
+out_dir: ./outputs/sample/
+# img_name: abc
+deltas: ['Young', 'Narrow_Eyes']
+alphas: [2, -2]
+# ori_img_path: 
+
+hydra:
+  run:
+    dir: ./
+
+
+run_type: gen_demo
+dataset: celebA
+attrs_path: ./data/${dataset}/attrs.json
+caps_path: ./data/${dataset}/captions.json
+n: 1000
+skip: 1000
+tag: gen_demo
