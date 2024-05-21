@@ -183,9 +183,8 @@ def main(cfg: DictConfig):
         img_name = cfg.get('img_name', datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
         os.makedirs(f'{cfg.out_dir}{mode}/{img_name}/', exist_ok=True)
         for i in range(len(imgs)):
-            attr_name = list(alphas.keys())[i] if i > 0 else 'ori'
-            alphas['ori'] = 0
-            imgs[i].save(f'{cfg.out_dir}{mode}/{img_name}/{i}_{attr_name}_{alphas[attr_name]}.jpg')
+            attr_name = list(alphas.keys())[i-1] if i > 0 else 'ori'
+            imgs[i].save(f'{cfg.out_dir}{mode}/{img_name}/{i}_{attr_name}_{alphas[attr_name] if i > 0 else 0}.jpg')
     else: 
         print("Invalid mode!!")
 
