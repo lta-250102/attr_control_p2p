@@ -2,6 +2,6 @@ defaults:
   - base
   - model: sdxl
   - _self_
-  - prompts: eyes/big
+  - prompts: nose/pointy
 
 run_type: learn_delta_naive_clip

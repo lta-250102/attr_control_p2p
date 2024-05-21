@@ -31,7 +31,13 @@ def main(cfg: DictConfig):
         target_token_embs = { }
         for direction in ['prompt_positive', 'prompt_negative']:
             emb = model.embed_prompt(f'{prefix} {d_prompt[direction]}')
-            tokenwise_masks = emb.get_tokenwise_mask(get_mask_regex(emb.prompt, d_prompt[direction]))
+            characterwise_mask = get_mask_regex(emb.prompt, d_prompt[direction])
+            tokenwise_masks = emb.get_tokenwise_mask(characterwise_mask)
+            print('-----------------------------------------------------')
+            print(characterwise_mask)
+            print('-----------------------------------------------------')
+            print(tokenwise_masks)
+            print('-----------------------------------------------------')
             # Retrieve last token that is part of the target word
             target_token_embs[direction] = { encoder: embedding[len(tokenwise_masks[encoder]) - 1 - tokenwise_masks[encoder][::-1].index(True)] for encoder, embedding in emb.tokenwise_embeddings.items() }
         # Eq. 2
