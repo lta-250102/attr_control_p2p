@@ -4,7 +4,8 @@ einops
 hydra-core
 jaxtyping
 matplotlib
-matplotlib
+transformers
+opencv-python
 numpy
 omegaconf
 Pillow
