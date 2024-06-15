@@ -14,10 +14,12 @@ Just clone the repo and install the requirements via `pip install -r requirement
 ### Inference
 For inference, just start with one of the notebook at [`notebooks`](https://github.com/CompVis/attribute-control/tree/main/notebooks) for a minimal example.
 
-The second option, run:
+The second option, to generate demo with config and data caption and attributes, run:
 ```shell
 python src/gen_demo.py
 ```
+
+![teaser](./docs/demo_14.png)
 
 We provide a range of learned deltas for SDXL at [`pretrained_deltas`](https://github.com/lta-250102/attr_control_p2p/tree/master/pretrained_deltas). These can also be used for models such as SD 1.5 or LDM3D by just loading them as usual.
 
